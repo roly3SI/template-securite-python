@@ -11,6 +11,7 @@ class Capture:
         """
         Capture network traffic from an interface
         """
+
         interface = self.interface
         logger.info(f"Capture traffic from interface {interface}")
 
@@ -18,6 +19,7 @@ class Capture:
         """
         Sort and return all captured network protocols
         """
+
         return ""
 
     def get_all_protocols(self) -> str:
