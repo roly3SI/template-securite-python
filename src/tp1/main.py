@@ -4,7 +4,7 @@ from tp1.utils.config import logger
 from tp1.utils.report import Report
 
 def parse_args():
-    #On gère les arguments de la command line
+    #On gère les arguments de la commandline
     parser = argparse.ArgumentParser()
     parser.add_argument("--pcap", required=True, type=str)
     parser.add_argument("--out", default="report.json", type=str)
@@ -17,7 +17,7 @@ def main():
     #Lecture et analyse du fichier pcap
     capture = Capture()
     capture.read_pcap(args.pcap)
-    capture.analyse()
+    capture.analyse("all")
     summary = capture.get_summary()
 
     filename = "report.pdf"
