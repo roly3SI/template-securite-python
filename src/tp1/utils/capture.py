@@ -14,7 +14,7 @@ class Capture:
         self.pkts = []
         self.protocols = Counter()
         self.alerts = []
-        self.flag = "Non trouvé"
+        self.potential_flags = defaultdict(list)
         self.summary = {}
 
     def capture_traffic(self) -> None:
@@ -71,20 +71,22 @@ class Capture:
             syn_counts[pkt[IP].src].add(pkt[TCP].dport)
 
     def _analyze_payload(self, pkt, flag_pattern) -> None:
-        #Identification injections SQL et flag dans les données
         if not (pkt.haslayer(Raw) and pkt.haslayer(IP)):
             return
         try:
             payload = pkt[Raw].load.decode(errors="ignore")
             sql_sigs = ["union select", "1=1", "or '1'='1", "select * from"]
 
-            #Injection SQL
             if any(sig in payload.lower() for sig in sql_sigs):
                 self.alerts.append({"type": "sql_injection", "attacker": pkt[IP].src})
 
-            #Flag ESGI
             if match := flag_pattern.search(payload):
-                self.flag = match.group(0)
+                flag_str = match.group(0)
+                #Sauvegarde le drapeau en associant IP et MAC
+                self.potential_flags[pkt[IP].src].append(flag_str)
+                if pkt.haslayer(Ether):
+                    self.potential_flags[pkt[Ether].src].append(flag_str)
+
         except (IndexError, UnicodeDecodeError):
             pass
 
@@ -95,18 +97,28 @@ class Capture:
         """
         return self.summary
 
-    def _gen_summary(self) -> str:
-        #Supprime les doublons dans le JSON
+    def _gen_summary(self) -> dict:
         unique_alerts = []
         seen = set()
+        attacker_ids = set()
+
         for alert in self.alerts:
             identifier = (alert["type"], alert["attacker"])
             if identifier not in seen:
                 seen.add(identifier)
                 unique_alerts.append(alert)
+                attacker_ids.add(alert["attacker"])
+
+        final_flag = "Non trouvé"
+
+        #Flag si IP attaquante
+        for source_id, flags in self.potential_flags.items():
+            if source_id in attacker_ids:
+                final_flag = flags[0]
+                break
 
         return {
             "protocols": dict(self.protocols),
             "attacks": unique_alerts,
-            "flag": self.flag
+            "flag": final_flag
         }
