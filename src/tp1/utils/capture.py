@@ -19,16 +19,16 @@ class Capture:
 
     def capture_traffic(self) -> None:
         #Mode fichier pcap
-        logger.info("Mode hors-ligne")
+        logger.info("Offline mode")
 
     def read_pcap(self, pcap_path: str) -> None:
         #Charge le fichier pcap
-        logger.info(f"Lecture du fichier : {pcap_path}")
+        logger.info(f"Reading file : {pcap_path}")
         self.pkts = rdpcap(pcap_path)
 
     def analyse(self, protocols: str = "") -> None:
         #Inspecte chaque packet
-        logger.debug(f"Analyse lancée (paramètre : {protocols})")
+        logger.debug(f"Analysis started (parameter : {protocols})")
         arp_table = {}
         syn_counts = defaultdict(set)
         flag_pattern = re.compile(r'ESGI\{.*?}')
