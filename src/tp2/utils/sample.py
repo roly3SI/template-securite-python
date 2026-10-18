@@ -1,6 +1,7 @@
 import math
 import magic
 import hashlib
+import re
 from collections import Counter
 
 
@@ -28,7 +29,17 @@ class Sample:
 
     def extract_iocs(self) -> dict:
         """domaines, ips, urls, mutex, registry (regex sur les strings)."""
-        raise NotImplementedError
+        text = self.data.decode("ascii", errors="ignore")
+        raw_ips = re.findall(r'\b(?:\d{1,3}\.){3}\d{1,3}\b', text)
+        valid_ips = [ip for ip in raw_ips if all(0 <= int(octet) <= 255 for octet in ip.split('.'))]
+
+        return {
+            "domains": list(set(re.findall(r'\b(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\b', text))),
+            "ips": list(set(valid_ips)),
+            "urls": list(set(re.findall(r'https?://[a-zA-Z0-9./_?-]+', text))),
+            "mutex": list(set(re.findall(r'(?i)(?:Global|Local)\\[a-zA-Z0-9_-]+', text))),
+            "registry": list(set(re.findall(r'(?i)(?:HKCU|HKLM|HKCR|HKU|HKCC|HKEY_[A-Z_]+)\\[a-zA-Z0-9_\\]+', text)))
+        }
 
     def parse_binary(self) -> dict:
         """imports / sections via lief (si PE/ELF)."""
