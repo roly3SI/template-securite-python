@@ -2,6 +2,7 @@ import math
 import magic
 import hashlib
 import re
+import lief
 from collections import Counter
 
 
@@ -43,4 +44,26 @@ class Sample:
 
     def parse_binary(self) -> dict:
         """imports / sections via lief (si PE/ELF)."""
-        raise NotImplementedError
+        result = {"imports": [], "exports": [], "sections": []}
+        try:
+            binary = lief.parse(self.path)
+            if binary:
+                if hasattr(binary, 'imports'):
+                    for imp in binary.imports:
+                        for entry in imp.entries:
+                            if entry.name:
+                                result["imports"].append(entry.name)
+                if hasattr(binary, 'exported_functions'):
+                    for exp in binary.exported_functions:
+                        if exp.name:
+                            result["exports"].append(exp.name)
+                if hasattr(binary, 'sections'):
+                    for sec in binary.sections:
+                        if sec.name:
+                            result["sections"].append(sec.name)
+        except Exception:
+            pass
+        result["imports"] = list(set(result["imports"]))
+        result["exports"] = list(set(result["exports"]))
+        result["sections"] = list(set(result["sections"]))
+        return result
