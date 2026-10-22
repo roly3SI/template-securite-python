@@ -21,7 +21,7 @@ def main() -> None:
         result = triage.run()
         out_name = result.get("sha256", filename)
         report = Report(result)
-        report.generate_json(os.path.join(args.out, f"{out_name}.json"))
+        report.generate_json(os.path.join(args.out, f"{out_name}.triage.json"))
 
         try:
             report.generate_pdf(os.path.join(args.out, f"{out_name}.pdf"))
