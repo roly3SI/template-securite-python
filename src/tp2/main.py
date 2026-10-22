@@ -15,18 +15,15 @@ def main() -> None:
     for filename in os.listdir(args.samples):
         filepath = os.path.join(args.samples, filename)
 
-    if os.path.isfile(filepath):
-        triage = Triage(filepath, backend="openrouter")
-        triage.scanner.rules_path = args.rules
-        result = triage.run()
-        out_name = result.get("sha256", filename)
-        report = Report(result)
-        report.generate_json(os.path.join(args.out, f"{out_name}.triage.json"))
-
-        try:
-            report.generate_pdf(os.path.join(args.out, f"{out_name}.pdf"))
-        except NotImplementedError:
-            pass
+        if os.path.isfile(filepath) and not filename.endswith('.txt'):
+            triage = Triage(filepath, backend="openrouter")
+            triage.scanner.rules_path = args.rules
+            result = triage.run()
+            report = Report(result)
+            sha256_name = result.get("sha256", filename)
+            report.generate_pdf(os.path.join(args.out, f"{sha256_name}.pdf"))
+            report.generate_json(os.path.join(args.out, f"{sha256_name}.json"))
+            report.generate_json(os.path.join(args.out, f"{filename}.triage.json"))
 
 
 if __name__ == "__main__":

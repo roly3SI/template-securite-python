@@ -39,8 +39,14 @@ class Triage:
             verdict = {}
 
         text_data = sample.data.decode("ascii", errors="ignore")
-        flag_match = re.search(r'ESGI\{.*?\}', text_data)
-        flag_value = flag_match.group(0) if flag_match else "ESGI{not_found}"
+        all_flags = re.findall(r'ESGI\{.*?\}', text_data)
+        flag_value = "ESGI{not_found}"
+
+        if all_flags:
+            trap_words = ["trap", "piege"]
+            clean_flags = [f for f in all_flags if not any(trap in f.lower() for trap in trap_words)]
+            if clean_flags:
+                flag_value = clean_flags[0]
 
         return {
             "sha256": meta.get("sha256", ""),
