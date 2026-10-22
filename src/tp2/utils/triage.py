@@ -43,7 +43,7 @@ class Triage:
         flag_value = "ESGI{not_found}"
 
         if all_flags:
-            trap_words = ["trap", "piege"]
+            trap_words = ["piege"]
             clean_flags = [f for f in all_flags if not any(trap in f.lower() for trap in trap_words)]
             if clean_flags:
                 flag_value = clean_flags[0]
