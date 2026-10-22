@@ -1,6 +1,5 @@
 import json
-from tp2.utils.report import Report
-
+from src.tp2.utils.report import Report
 
 def test_generate_json(tmp_path):
     fake_result = {

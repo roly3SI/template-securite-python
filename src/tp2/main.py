@@ -2,6 +2,7 @@ import argparse
 import os
 from tp2.utils.report import Report
 from tp2.utils.triage import Triage
+from tp2.utils.scanner import YaraScanner
 
 
 def main() -> None:
@@ -17,7 +18,7 @@ def main() -> None:
 
         if os.path.isfile(filepath) and not filename.endswith('.txt'):
             triage = Triage(filepath, backend="openrouter")
-            triage.scanner.rules_path = args.rules
+            triage.scanner = YaraScanner(args.rules)
             result = triage.run()
             report = Report(result)
             sha256_name = result.get("sha256", filename)

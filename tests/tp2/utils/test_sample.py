@@ -1,4 +1,4 @@
-from tp2.utils.sample import Sample
+from src.tp2.utils.sample import Sample
 
 def test_shannon_entropy(tmp_path):
     test_file = tmp_path / "test.bin"
