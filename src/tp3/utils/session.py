@@ -36,6 +36,7 @@ class Session:
         """
         Prepares the request for sending by capturing and solving the captcha.
         """
+        self.req_session.get(self.url)
         captcha = Captcha(self.url, self.req_session)
         captcha.capture()
         captcha.solve()
@@ -52,20 +53,19 @@ class Session:
         """
         Processes the response.
         """
-        html_content = self.response.text
+        try:
+            data = self.response.json()
 
-        flag_match = re.search(r'ESGI\{.*?\}', html_content)
-        if flag_match:
-            self.valid_flag = flag_match.group(0)
+            self.valid_flag = data.get("flag1", "")
+            self.tcp_host = data.get("host", "")
+            self.tcp_port = int(data.get("port", 0))
 
-        host_match = re.search(r'Host:\s*([a-zA-Z0-9.-]+)', html_content, re.IGNORECASE)
-        port_match = re.search(r'Port:\s*(\d+)', html_content, re.IGNORECASE)
-        key_match = re.search(r'Key:\s*([a-zA-Z0-9]+)', html_content, re.IGNORECASE)
+            key_hex = data.get("key", "")
+            if key_hex:
+                self.tcp_key = bytes.fromhex(key_hex)
 
-        if host_match and port_match and key_match:
-            self.tcp_host = host_match.group(1)
-            self.tcp_port = int(port_match.group(1))
-            self.tcp_key = key_match.group(1).encode('utf-8')
+        except requests.exceptions.JSONDecodeError:
+            pass
 
     def get_flag(self):
         """

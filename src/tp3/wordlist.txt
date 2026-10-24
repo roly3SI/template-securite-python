@@ -7,3 +7,4 @@ captcha
 challenge
 flag
 ESGI
+internal-panel

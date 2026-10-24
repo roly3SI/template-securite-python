@@ -2,6 +2,7 @@ import requests
 from io import BytesIO
 from PIL import Image
 import pytesseract
+from urllib.parse import urlparse
 
 class Captcha:
     def __init__(self, url,req_session=None):
@@ -26,7 +27,9 @@ class Captcha:
         """
         Fonction permettant la capture du captcha.
         """
-        response = self.req_session.get(f"{self.url}/captcha.png")
+        parsed = urlparse(self.url)
+        base_url = f"{parsed.scheme}://{parsed.netloc}"
+        response = self.req_session.get(f"{base_url}/captcha.png")
         self.image = response.content
 
     def get_value(self):
