@@ -1,3 +1,5 @@
+from unittest.mock import MagicMock, patch
+
 from src.tp3.utils.session import Session
 
 
@@ -14,29 +16,40 @@ def test_session_init():
     assert session.flag_value == ""
     assert session.valid_flag == ""
 
-
-def test_submit_request():
+@patch('src.tp3.utils.session.requests.Session.post')
+def test_submit_request(mock_post):
     # Given
     session = Session("http://example.com/captcha")
+    session.captcha_value = "TEST_CAPTCHA"
 
     # When
     session.submit_request()
 
     # Then
     # This is a minimal test since the method doesn't do anything yet
-    assert True
+    mock_post.assert_called_once()
+    assert session.response is not None
 
 
 def test_process_response():
     # Given
     session = Session("http://example.com/captcha")
-
+    session.response = MagicMock()
+    session.response.json.return_value = {
+        "flag1": "ESGI{mock_flag}",
+        "host": "127.0.0.1",
+        "port": 9090,
+        "key": "deadbeef"
+    }
     # When
-    result = session.process_response()
+    session.process_response()
 
     # Then
     # This is a minimal test since the method doesn't do anything yet
-    assert result is None
+    assert session.valid_flag == "ESGI{mock_flag}"
+    assert session.tcp_host == "127.0.0.1"
+    assert session.tcp_port == 9090
+    assert session.tcp_key == bytes.fromhex("deadbeef")
 
 
 def test_get_flag():
