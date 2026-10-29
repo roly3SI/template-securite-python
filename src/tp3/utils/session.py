@@ -1,3 +1,4 @@
+import requests
 from src.tp3.utils.captcha import Captcha
 
 
@@ -23,27 +24,47 @@ class Session:
         self.captcha_value = ""
         self.flag_value = ""
         self.valid_flag = ""
+        self.req_session = requests.Session()
+
+        self.tcp_host = ""
+        self.tcp_port = 0
+        self.tcp_key = b""
+        self.response = None
 
     def prepare_request(self):
         """
         Prepares the request for sending by capturing and solving the captcha.
         """
-        captcha = Captcha(self.url)
+        self.req_session.get(self.url)
+        captcha = Captcha(self.url, self.req_session)
         captcha.capture()
         captcha.solve()
-
         self.captcha_value = captcha.get_value()
-        self.flag_value = "FIXME"
 
     def submit_request(self):
         """
         Sends the flag and captcha.
         """
+        data = {"captcha": self.captcha_value}
+        self.response = self.req_session.post(self.url, data=data)
 
     def process_response(self):
         """
         Processes the response.
         """
+        try:
+            data = self.response.json()
+
+            self.valid_flag = data.get("flag1", "")
+            self.tcp_host = data.get("host", "")
+            self.tcp_port = int(data.get("port", 0))
+
+            key_hex = data.get("key", "")
+            if key_hex:
+                self.tcp_key = bytes.fromhex(key_hex)
+
+        except requests.exceptions.JSONDecodeError:
+            pass
 
     def get_flag(self):
         """

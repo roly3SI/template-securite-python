@@ -1,0 +1,10 @@
+admin
+login
+hidden
+secret
+api
+captcha
+challenge
+flag
+ESGI
+internal-panel
