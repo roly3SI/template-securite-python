@@ -16,7 +16,6 @@ from tp3.utils.session import Session
 from tp3.utils.config import logger
 
 
-
 def breach_web(target: str) -> tuple[str, int, bytes]:
     """Fuzz les endpoints, casse le CAPTCHA, retourne (host, port, key).
 
@@ -53,21 +52,22 @@ def breach_web(target: str) -> tuple[str, int, bytes]:
         else:
             logger.info("[-] Retrying CAPTCHA...")
 
+
 def breach_network(host: str, port: int, key: bytes) -> str:
     """pwntools/socket : décode le flux base64+XOR en boucle sous 30 s.
 
     Retourne le flag final. Indices : pwn.remote, base64.
     """
-    context.log_level = 'error'
+    context.log_level = "error"
 
     conn = remote(host, port)
 
     while True:
         try:
-            line = conn.recvline().decode('utf-8').strip()
+            line = conn.recvline().decode("utf-8").strip()
 
             if "ESGI{" in line:
-                match = re.search(r'ESGI\{.*?\}', line)
+                match = re.search(r"ESGI\{.*?\}", line)
                 return match.group(0) if match else "ESGI{not_found}"
 
             if not line or " " in line or line == "WRONG":
@@ -89,6 +89,7 @@ def breach_network(host: str, port: int, key: bytes) -> str:
 
     return "ESGI{tcp_connection_lost}"
 
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--target", default="http://127.0.0.1:8080")
@@ -98,6 +99,7 @@ def main() -> None:
     host, port, key = breach_web(args.target)
     flag = breach_network(host, port, key)
     logger.info(f"[+] FLAG_FINAL: {flag}")
+
 
 if __name__ == "__main__":
     main()

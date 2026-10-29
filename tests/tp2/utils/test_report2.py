@@ -1,12 +1,9 @@
 import json
 from src.tp2.utils.report import Report
 
+
 def test_generate_json(tmp_path):
-    fake_result = {
-        "sha256": "123456",
-        "score": 10,
-        "flag": "ESGI{test_flag}"
-    }
+    fake_result = {"sha256": "123456", "score": 10, "flag": "ESGI{test_flag}"}
 
     report = Report(fake_result)
     out_file = tmp_path / "out.json"

@@ -19,6 +19,7 @@ SYSTEM_PROMPT = (
     '- "score": (entier) de 0 à 10\n'
 )
 
+
 class LLMTriage:
     def __init__(self, backend: str = "openrouter") -> None:
         self.backend = backend
@@ -36,7 +37,7 @@ class LLMTriage:
         )
         try:
             if self.backend == "openrouter":
-                api_key = os.environ.get('OPENROUTER_API_KEY', '')
+                api_key = os.environ.get("OPENROUTER_API_KEY", "")
                 r = requests.post(
                     "https://openrouter.ai/api/v1/chat/completions",
                     headers={"Authorization": f"Bearer {api_key}"},
@@ -53,14 +54,18 @@ class LLMTriage:
                 return r.json()["choices"][0]["message"]["content"]
 
             elif self.backend == "ollama":
-                r = requests.post("http://localhost:11434/api/chat", json={
-                    "model": "qwen2.5:3b",
-                    "stream": False,
-                    "messages": [
-                        {"role": "system", "content": SYSTEM_PROMPT},
-                        {"role": "user", "content": safe_user_prompt},
-                    ],
-                }, timeout=120)
+                r = requests.post(
+                    "http://localhost:11434/api/chat",
+                    json={
+                        "model": "qwen2.5:3b",
+                        "stream": False,
+                        "messages": [
+                            {"role": "system", "content": SYSTEM_PROMPT},
+                            {"role": "user", "content": safe_user_prompt},
+                        ],
+                    },
+                    timeout=120,
+                )
                 r.raise_for_status()
                 return r.json()["message"]["content"]
 
@@ -72,6 +77,6 @@ class LLMTriage:
                 "family_guess": "unknown",
                 "mitre_attack": [],
                 "llm_summary": f"Analyse impossible (Erreur: {str(e)}).",
-                "score": 5
+                "score": 5,
             }
             return json.dumps(fallback)

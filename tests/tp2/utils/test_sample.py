@@ -1,10 +1,12 @@
 from src.tp2.utils.sample import Sample
 
+
 def test_shannon_entropy(tmp_path):
     test_file = tmp_path / "test.bin"
-    test_file.write_bytes(b"\x00\xFF\x55\xAA")
+    test_file.write_bytes(b"\x00\xff\x55\xaa")
     s = Sample(str(test_file))
     assert s.shannon_entropy() == 2.0
+
 
 def test_extract_iocs(tmp_path):
     test_file = tmp_path / "test.bin"

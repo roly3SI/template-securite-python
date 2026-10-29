@@ -25,7 +25,7 @@ class Report:
         pdf.set_font("helvetica", style="B", size=14)
         pdf.cell(0, 10, "Analyse détaillée (LLM) :", ln=True)
         pdf.set_font("helvetica", size=12)
-        pdf.multi_cell(0, 8, txt=str(self.result.get('llm_summary', '')))
+        pdf.multi_cell(0, 8, txt=str(self.result.get("llm_summary", "")))
 
         pdf.output(out_pdf)
 

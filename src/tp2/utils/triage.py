@@ -22,12 +22,7 @@ class Triage:
         bininfo = sample.parse_binary()
         matches = self.scanner.scan(sample.data)
 
-        summary = json.dumps({
-            "meta": meta,
-            "iocs": iocs,
-            "yara": matches,
-            "bin": bininfo
-        })
+        summary = json.dumps({"meta": meta, "iocs": iocs, "yara": matches, "bin": bininfo})
 
         try:
             verdict_str = self.llm.triage(summary)
@@ -39,7 +34,7 @@ class Triage:
             verdict = {}
 
         text_data = sample.data.decode("ascii", errors="ignore")
-        all_flags = re.findall(r'ESGI\{.*?\}', text_data)
+        all_flags = re.findall(r"ESGI\{.*?\}", text_data)
         flag_value = "ESGI{not_found}"
 
         if all_flags:
@@ -61,5 +56,5 @@ class Triage:
             "mitre_attack": verdict.get("mitre_attack", []),
             "llm_summary": verdict.get("llm_summary", "Résumé non disponible."),
             "score": verdict.get("score", 0),
-            "flag": flag_value
-                }
+            "flag": flag_value,
+        }

@@ -1,6 +1,7 @@
 import yara
 import os
 
+
 class YaraScanner:
     def __init__(self, rules_path: str = "rules/course_rules.yar") -> None:
         self.rules_path = rules_path
@@ -27,7 +28,7 @@ class YaraScanner:
                 filepaths = {
                     f: os.path.join(self.rules_path, f)
                     for f in os.listdir(self.rules_path)
-                    if f.endswith(('.yar', '.yara'))
+                    if f.endswith((".yar", ".yara"))
                 }
                 if filepaths:
                     self.rules = yara.compile(filepaths=filepaths)

@@ -16,7 +16,8 @@ def test_session_init():
     assert session.flag_value == ""
     assert session.valid_flag == ""
 
-@patch('src.tp3.utils.session.requests.Session.post')
+
+@patch("src.tp3.utils.session.requests.Session.post")
 def test_submit_request(mock_post):
     # Given
     session = Session("http://example.com/captcha")
@@ -39,7 +40,7 @@ def test_process_response():
         "flag1": "ESGI{mock_flag}",
         "host": "127.0.0.1",
         "port": 9090,
-        "key": "deadbeef"
+        "key": "deadbeef",
     }
     # When
     session.process_response()

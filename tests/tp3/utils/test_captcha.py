@@ -17,8 +17,9 @@ def test_captcha_init():
     assert captcha.url == url
     assert captcha.value == ""
 
-@patch('src.tp3.utils.captcha.pytesseract.image_to_string')
-@patch('src.tp3.utils.captcha.Image.open')
+
+@patch("src.tp3.utils.captcha.pytesseract.image_to_string")
+@patch("src.tp3.utils.captcha.Image.open")
 def test_solve(mock_image_open, mock_image_to_string):
     # Given
     captcha = Captcha("http://example.com/captcha", requests.Session())
@@ -31,7 +32,8 @@ def test_solve(mock_image_open, mock_image_to_string):
     # Then
     assert captcha.get_value() == "MOCKED_CAPTCHA"
 
-@patch.object(requests.Session, 'get')
+
+@patch.object(requests.Session, "get")
 def test_capture(mock_get):
     # Given
     req_session = requests.Session()
