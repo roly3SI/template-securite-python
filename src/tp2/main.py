@@ -16,7 +16,7 @@ def main() -> None:
     for filename in os.listdir(args.samples):
         filepath = os.path.join(args.samples, filename)
 
-        if os.path.isfile(filepath) and not filename.endswith('.txt'):
+        if os.path.isfile(filepath) and not filename.endswith(".txt"):
             triage = Triage(filepath, backend="openrouter")
             triage.scanner = YaraScanner(args.rules)
             result = triage.run()

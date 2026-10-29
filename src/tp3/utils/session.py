@@ -1,5 +1,4 @@
 import requests
-import re
 from src.tp3.utils.captcha import Captcha
 
 

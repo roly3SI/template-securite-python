@@ -2,6 +2,7 @@ from tp1.utils.capture import Capture
 import pygal
 from fpdf import FPDF
 
+
 class Report:
     def __init__(self, capture: Capture, filename: str, summary: dict):
         self.capture = capture
@@ -22,7 +23,7 @@ class Report:
         doc.cell(w=0, h=10, txt=self.title, align="C", ln=1)
         doc.ln(10)
 
-        #Contenu principal
+        # Contenu principal
         doc.set_font("helvetica", size=12)
         doc.multi_cell(w=0, h=8, txt=self.array)
         doc.ln(8)
@@ -32,7 +33,7 @@ class Report:
 
         doc.set_font("helvetica", size=12)
 
-        #Recupération et affichage des stats
+        # Recupération et affichage des stats
         stats = self.summary.get("protocols", {})
         for p, count in stats.items():
             doc.cell(w=0, h=8, txt=f"- {p} : {count} paquets", ln=1)
@@ -48,7 +49,7 @@ class Report:
 
     def generate(self, param: str) -> None:
         if param == "graph":
-            #Création du graphique
+            # Création du graphique
             bar_chart = pygal.Bar()
             bar_chart.title = "Volume par protocole"
 
@@ -59,7 +60,7 @@ class Report:
             bar_chart.render_to_file(self.graph_file)
 
         elif param == "array":
-            #Formatage du texte
+            # Formatage du texte
             attacks = self.summary.get("attacks", [])
             flag = self.summary.get("flag", "Non trouvé")
 

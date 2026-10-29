@@ -18,7 +18,7 @@ class Sample:
             "md5": hashlib.md5(self.data).hexdigest(),
             "size": len(self.data),
             "entropy": round(self.shannon_entropy(), 2),
-            "file_type": magic.from_buffer(self.data)
+            "file_type": magic.from_buffer(self.data),
         }
 
     def shannon_entropy(self) -> float:
@@ -31,15 +31,17 @@ class Sample:
     def extract_iocs(self) -> dict:
         """domaines, ips, urls, mutex, registry (regex sur les strings)."""
         text = self.data.decode("ascii", errors="ignore")
-        raw_ips = re.findall(r'\b(?:\d{1,3}\.){3}\d{1,3}\b', text)
-        valid_ips = [ip for ip in raw_ips if all(0 <= int(octet) <= 255 for octet in ip.split('.'))]
+        raw_ips = re.findall(r"\b(?:\d{1,3}\.){3}\d{1,3}\b", text)
+        valid_ips = [ip for ip in raw_ips if all(0 <= int(octet) <= 255 for octet in ip.split("."))]
 
         return {
-            "domains": list(set(re.findall(r'\b(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\b', text))),
+            "domains": list(set(re.findall(r"\b(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}\b", text))),
             "ips": list(set(valid_ips)),
-            "urls": list(set(re.findall(r'https?://[a-zA-Z0-9./_?-]+', text))),
-            "mutex": list(set(re.findall(r'(?i)(?:Global|Local)\\[a-zA-Z0-9_-]+', text))),
-            "registry": list(set(re.findall(r'(?i)(?:HKCU|HKLM|HKCR|HKU|HKCC|HKEY_[A-Z_]+)\\[a-zA-Z0-9_\\]+', text)))
+            "urls": list(set(re.findall(r"https?://[a-zA-Z0-9./_?-]+", text))),
+            "mutex": list(set(re.findall(r"(?i)(?:Global|Local)\\[a-zA-Z0-9_-]+", text))),
+            "registry": list(
+                set(re.findall(r"(?i)(?:HKCU|HKLM|HKCR|HKU|HKCC|HKEY_[A-Z_]+)\\[a-zA-Z0-9_\\]+", text))
+            ),
         }
 
     def parse_binary(self) -> dict:
@@ -48,16 +50,16 @@ class Sample:
         try:
             binary = lief.parse(self.path)
             if binary:
-                if hasattr(binary, 'imports'):
+                if hasattr(binary, "imports"):
                     for imp in binary.imports:
                         for entry in imp.entries:
                             if entry.name:
                                 result["imports"].append(entry.name)
-                if hasattr(binary, 'exported_functions'):
+                if hasattr(binary, "exported_functions"):
                     for exp in binary.exported_functions:
                         if exp.name:
                             result["exports"].append(exp.name)
-                if hasattr(binary, 'sections'):
+                if hasattr(binary, "sections"):
                     for sec in binary.sections:
                         if sec.name:
                             result["sections"].append(sec.name)
